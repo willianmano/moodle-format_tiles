@@ -1028,6 +1028,14 @@ function format_tiles_output_fragment_get_cm_list(array $args): string {
         throw new moodle_exception('notavailablecourse', '', '', $format->get_section_name($sectioninfo));
     }
 
+    try {
+        // Mathjax loader was refactored in core commit 84338a47 (Moodle 5.1, May 2025).
+        // Add this to avoid equations failing when tiles are closed/re-opened.
+        $PAGE->requires->should_create_one_time_item_now('filter_mathjaxloader-scripts');
+    } catch (\Exception $e) {
+        debugging('Could not set Mathjax loader created', DEBUG_DEVELOPER);
+    }
+
     $renderer = $PAGE->get_renderer('format_tiles');
     $templateable = new \format_tiles\output\course_output($course, true, $section->section);
     $data = $templateable->export_for_template($renderer);
@@ -1074,6 +1082,13 @@ function format_tiles_output_fragment_get_cm_content(array $args): string {
 
         } catch (\Exception $e) {
             debugging('Could not set glossary autolink created', DEBUG_DEVELOPER);
+        }
+        try {
+            // Mathjax loader was refactored in core commit 84338a47 (Moodle 5.1, May 2025).
+            // Add this to avoid equations failing when tiles are closed/re-opened.
+            $PAGE->requires->should_create_one_time_item_now('filter_mathjaxloader-scripts');
+        } catch (\Exception $e) {
+            debugging('Could not set Mathjax loader created', DEBUG_DEVELOPER);
         }
         if ($mod->modname == 'page') {
             // Record from the page table.
