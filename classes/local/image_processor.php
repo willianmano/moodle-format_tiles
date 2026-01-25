@@ -179,7 +179,7 @@ class image_processor {
             $originalheight
         );
         ob_start();
-        switch($imageparams['function']) {
+        switch ($imageparams['function']) {
             case 'imagejpeg':
                 if (!imagejpeg($finalimage, null, $imageparams['quality'])) {
                     ob_end_clean();

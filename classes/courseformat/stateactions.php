@@ -40,10 +40,10 @@ class stateactions extends stateactions_base {
      */
     public function section_highlight(
         stateupdates $updates,
-        stdClass     $course,
-        array        $ids = [],
-        ?int         $targetsectionid = null,
-        ?int         $targetcmid = null
+        stdClass $course,
+        array $ids = [],
+        ?int $targetsectionid = null,
+        ?int $targetcmid = null
     ): void {
         $actions = new stateactions_topics();
         $actions->section_highlight(
