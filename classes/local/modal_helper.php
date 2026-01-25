@@ -126,7 +126,7 @@ class modal_helper {
         }
         $lastmimetypefilecms->close();
         foreach ([$result->pdf, $result->html] as $res) {
-            $res = array_map(function($cmid) {
+            $res = array_map(function ($cmid) {
                 return (int)$cmid;
             }, $res);
             sort($res);
