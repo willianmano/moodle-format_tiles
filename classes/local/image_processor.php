@@ -161,8 +161,18 @@ class image_processor {
         $dstx = floor(($requestedwidth - $targetwidth) / 2);
         $dsty = floor(($requestedheight - $targetheight) / 2);
 
-        imagecopyresampled($finalimage, $original, $dstx, $dsty, 0, 0, $targetwidth, $targetheight, $originalwidth,
-            $originalheight);
+        imagecopyresampled(
+            $finalimage,
+            $original,
+            $dstx,
+            $dsty,
+            0,
+            0,
+            $targetwidth,
+            $targetheight,
+            $originalwidth,
+            $originalheight
+        );
         ob_start();
         switch($imageparams['function']) {
             case 'imagejpeg':

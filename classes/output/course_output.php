@@ -152,7 +152,8 @@ class course_output implements \renderable, \templatable {
         }
         $this->devicetype = \core_useragent::get_device_type();
         $this->modalscmids = \format_tiles\local\modal_helper::get_modal_allowed_cm_ids_integer_list(
-            $this->course->id, false
+            $this->course->id,
+            false
         );
         $this->format = course_get_format($this->course);
         $this->modinfo = get_fast_modinfo($this->course);
@@ -279,8 +280,14 @@ class course_output implements \renderable, \templatable {
      * @return string
      */
     protected function temp_format_summary_text($section) {
-        $summarytext = file_rewrite_pluginfile_urls($section->summary, 'pluginfile.php',
-            $this->coursecontext->id, 'course', 'section', $section->id);
+        $summarytext = file_rewrite_pluginfile_urls(
+            $section->summary,
+            'pluginfile.php',
+            $this->coursecontext->id,
+            'course',
+            'section',
+            $section->id
+        );
 
         $options = new \stdClass();
         $options->noclean = true;
@@ -516,7 +523,8 @@ class course_output implements \renderable, \templatable {
             $data['allowphototiles'] = 1;
             $data['showprogressphototiles'] = get_config('format_tiles', 'showprogresssphototiles');
             $phototileids = format_option::get_element_ids_having_options(
-                $this->course->id, format_option::OPTION_SECTION_PHOTO
+                $this->course->id,
+                format_option::OPTION_SECTION_PHOTO
             );
             $phototileextraclasses = 'phototile';
         } else {
@@ -552,7 +560,9 @@ class course_output implements \renderable, \templatable {
                 } else {
                     $title = format_string($rawtitle);
                 }
-                $ariatitle = get_string('tilearialabel', 'format_tiles',
+                $ariatitle = get_string(
+                    'tilearialabel',
+                    'format_tiles',
                     trim($title)
                         ? $title
                         : get_string('tilearialabel', 'format_tiles', $this->format->get_default_section_name($section))
@@ -637,7 +647,8 @@ class course_output implements \renderable, \templatable {
                 // See below about when "hide add cm control" is true.
                 $newtile['hideaddcmcontrol'] = false;
                 $newtile['single_sec_add_cm_control_html'] = $this->courserenderer->section_add_cm_controls(
-                    $this->format, $section
+                    $this->format,
+                    $section
                 );
 
                 $newtile['is_expanded'] = false;
@@ -1027,12 +1038,16 @@ class course_output implements \renderable, \templatable {
                         break;
                     case COMPLETION_COMPLETE_PASS:
                         $moduleobject['completionstring'] = get_string(
-                            'completion-pass', 'core_completion', $moduleobject['activityname']
+                            'completion-pass',
+                            'core_completion',
+                            $moduleobject['activityname']
                         );
                         break;
                     case COMPLETION_COMPLETE_FAIL:
                         $moduleobject['completionstring'] = get_string(
-                            'completion-fail', 'core_completion', $moduleobject['activityname']
+                            'completion-fail',
+                            'core_completion',
+                            $moduleobject['activityname']
                         );
                         $moduleobject['isfail'] = 1;
                         break;
@@ -1130,7 +1145,8 @@ class course_output implements \renderable, \templatable {
         if (get_config('format_tiles', 'highcontrastmodeallow')) {
             $controls[] = [
                 'url' => new \moodle_url(
-                    $courseurl, array_merge($courseurlparams, ['format-tiles-action' => 'togglehighcontrast'])
+                    $courseurl,
+                    array_merge($courseurlparams, ['format-tiles-action' => 'togglehighcontrast'])
                 ),
                 'label' => get_string('highcontrastmode', 'format_tiles'),
                 'checked' => \format_tiles\local\util::using_high_contrast(),

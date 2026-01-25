@@ -48,7 +48,11 @@ class stateactions extends stateactions_base {
     ): void {
         $actions = new stateactions_topics();
         $actions->section_highlight(
-            $updates, $course, $ids, $targetsectionid, $targetcmid
+            $updates,
+            $course,
+            $ids,
+            $targetsectionid,
+            $targetcmid
         );
     }
 
@@ -70,7 +74,11 @@ class stateactions extends stateactions_base {
     ): void {
         $actions = new stateactions_topics();
         $actions->section_unhighlight(
-            $updates, $course, $ids, $targetsectionid, $targetcmid
+            $updates,
+            $course,
+            $ids,
+            $targetsectionid,
+            $targetcmid
         );
     }
 }
