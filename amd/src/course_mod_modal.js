@@ -27,7 +27,7 @@
  * @since       Moodle 3.3
  */
 
-define(["jquery", "core/modal_factory", "core/config", "core/templates", "core/notification", "core/ajax",
+define(["jquery", "core/modal_save_cancel", "core/config", "core/templates", "core/notification", "core/ajax",
         'core/fragment', "core/modal_events"],
     function ($, modalFactory, config, Templates, Notification, ajax, Fragment, ModalEvents) {
         "use strict";

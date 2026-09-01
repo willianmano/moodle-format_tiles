@@ -26,8 +26,8 @@
  * @since       Moodle 3.3
  */
 
-define(["jquery", "core/templates", "core/ajax", "core/str", "core/notification", "core/config"],
-    function ($, Templates, ajax, str, Notification, config) {
+define(["jquery", "core/templates", "core/ajax", "core/str", "core/notification", "core/config", "core/modal"],
+    function ($, Templates, ajax, str, Notification, config, Modal) {
         "use strict";
 
         var modalStored;
@@ -295,68 +295,66 @@ define(["jquery", "core/templates", "core/ajax", "core/str", "core/notification"
                         tilenumbers: Array.from({length: maxNumberIcons + 1}, (e, i)=> i).filter((e) => e > 0),
                         wwwroot: config.wwwroot
                     }).done(function (iconsHTML) {
-                        require(["core/modal_factory"], function (modalFact) {
-                            modalFact.create({
-                                type: modalFact.types.DEFAULT,
-                                title: stringStore.pickAnIcon,
-                                body: iconsHTML
-                            }).done(function (modal) {
-                                modalStored = modal;
-                                modal.setLarge();
-                                modal.show();
-                                var modalRoot = $(modal.root);
-                                modalRoot.attr("id", "icon_picker_modal");
-                                modalRoot.data("true-sectionid", sectionId);
-                                modalRoot.data("section", section);
-                                modalRoot.addClass("icon_picker_modal");
-                                modalRoot.find(`#tile-number-container-${section}`).addClass('suggested');
-                                modalRoot.on("click", ".pickericon", function (e) {
-                                    var newIcon = $(e.currentTarget);
-                                    setIcon(
-                                        sectionId,
-                                        section,
-                                        newIcon.data("icon"),
-                                        newIcon.attr("title"),
-                                        pageType,
-                                        courseId,
-                                        'tileicon',
-                                        newIcon.data("contextid"), // For existing photos - sourcecontextid.
-                                        newIcon.data("itemid") // For existing photos - sourcetemid.
-                                    );
-                                    modal.hide();
-                                });
-                                // Icon search box handling.
-                                modalRoot.on("input", "input.iconsearch", function (e) {
-                                    var searchText = e.currentTarget.value.toLowerCase();
-                                    modalRoot.find(".pickericon").show();
-                                    if (searchText.length >= 3) {
-                                        modalRoot.find(".pickericon").filter(function (index, icon) {
-                                            // Show all icons then hide icons which do not match the search term.
-                                            return $(icon).data('original-title').toLowerCase().indexOf(searchText) < 0;
-                                        }).hide();
+                        Modal.create({
+                            title: stringStore.pickAnIcon,
+                            body: iconsHTML,
+                            large: true
+                        }).then(function (modal) {
+                            modalStored = modal;
+                            modal.show();
+                            var modalRoot = $(modal.root);
+                            modalRoot.attr("id", "icon_picker_modal");
+                            modalRoot.data("true-sectionid", sectionId);
+                            modalRoot.data("section", section);
+                            modalRoot.addClass("icon_picker_modal");
+                            modalRoot.find(`#tile-number-container-${section}`).addClass('suggested');
+                            modalRoot.on("click", ".pickericon", function (e) {
+                                var newIcon = $(e.currentTarget);
+                                setIcon(
+                                    sectionId,
+                                    section,
+                                    newIcon.data("icon"),
+                                    newIcon.attr("title"),
+                                    pageType,
+                                    courseId,
+                                    'tileicon',
+                                    newIcon.data("contextid"), // For existing photos - sourcecontextid.
+                                    newIcon.data("itemid") // For existing photos - sourcetemid.
+                                );
+                                modal.hide();
+                            });
+                            // Icon search box handling.
+                            modalRoot.on("input", "input.iconsearch", function (e) {
+                                var searchText = e.currentTarget.value.toLowerCase();
+                                modalRoot.find(".pickericon").show();
+                                if (searchText.length >= 3) {
+                                    modalRoot.find(".pickericon").filter(function (index, icon) {
+                                        // Show all icons then hide icons which do not match the search term.
+                                        return $(icon).data('original-title').toLowerCase().indexOf(searchText) < 0;
+                                    }).hide();
+                                }
+                            });
+                            if (allowPhotoTiles) {
+                                // Set the URL for the photo upload button if used (done dynamically as contains section id).
+                                var url = getPhotoTileButtonUrl(courseId, sectionId);
+                                modalRoot.find('#phototilebtn')
+                                    .attr('href', url);
+                                // Now that we have modal, if photo library tab is clicked we need to lazy load the photos.
+                                $("#launch-photo-library").click(function () {
+                                    if (recentPhotoSet.length !== 0) {
+                                        Templates.render("format_tiles/icon_picker_photos", {
+                                            /* eslint-disable-next-line camelcase */
+                                            icon_picker_photos: recentPhotoSet,
+                                            wwwroot: config.wwwroot
+                                        }).done(function (photosHTML) {
+                                            populatePhotoLibrary(photosHTML, modalRoot, modal);
+                                        });
                                     }
                                 });
-                                if (allowPhotoTiles) {
-                                    // Set the URL for the photo upload button if used (done dynamically as contains section id).
-                                    var url = getPhotoTileButtonUrl(courseId, sectionId);
-                                    modalRoot.find('#phototilebtn')
-                                        .attr('href', url);
-                                    // Now that we have modal, if photo library tab is clicked we need to lazy load the photos.
-                                    $("#launch-photo-library").click(function () {
-                                        if (recentPhotoSet.length !== 0) {
-                                            Templates.render("format_tiles/icon_picker_photos", {
-                                                /* eslint-disable-next-line camelcase */
-                                                icon_picker_photos: recentPhotoSet,
-                                                wwwroot: config.wwwroot
-                                            }).done(function (photosHTML) {
-                                                populatePhotoLibrary(photosHTML, modalRoot, modal);
-                                            });
-                                        }
-                                    });
-                                }
-                                $(document).trigger('format-tiles-icon-picker-modal-created');
-                            });
-                        });
+                            }
+                            $(document).trigger('format-tiles-icon-picker-modal-created');
+                            return modal;
+                        }).catch(Notification.exception);
                     });
                 };
                 if (iconSet.length <= 0) {
